@@ -187,15 +187,24 @@
     - cloud-provider
     - facts
 
-- name: Test if openstack_cacert is a base64 string
+- name: Set the default value of openstack_cacert_is_base64 to false
   set_fact:
-    openstack_cacert_is_base64: "{% if openstack_cacert | b64decode %}true{% else %}false{% endif %}"
+    openstack_cacert_is_base64: false
   when:
     - cloud_provider is defined
     - cloud_provider == 'openstack'
     - openstack_cacert is defined
     - openstack_cacert | length > 0
 
+- name: Test if openstack_cacert is a base64 string
+  set_fact:
+    openstack_cacert_is_base64: "{% if openstack_cacert | b64decode %}true{% endif %}"
+  ignore_errors: true
+  when:
+    - cloud_provider is defined
+    - cloud_provider == 'openstack'
+    - openstack_cacert is defined
+    - openstack_cacert | length > 0
 
 - name: Write cacert file
   copy:
